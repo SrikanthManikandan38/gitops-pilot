@@ -1,6 +1,6 @@
 # GitOps Pilot
 
-A compact, dependency-free MVP for a GitOps control plane. It provides an environment dashboard, sync trigger API, declarative environment catalog, Kubernetes starter manifest, and GitHub Actions validation workflow.
+A compact, dependency-free MVP for a GitOps control plane. It provides an environment dashboard, sync trigger API, declarative environment catalog, Kubernetes starter manifest, and GitHub Actions validation workflow. The dashboard reads `config/environments.yaml` every time it refreshes.
 
 ## Run locally
 

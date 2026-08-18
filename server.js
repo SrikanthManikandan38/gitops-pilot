@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = __dirname;
+const environmentConfig = path.join(root, 'config', 'environments.yaml');
 const state = {
   environments: [
     { name: 'development', branch: 'main', status: 'Healthy', revision: 'a42f1d8', updatedAt: '2 min ago', policy: 'Passed' },
@@ -16,6 +17,31 @@ const state = {
   ]
 };
 
+function readEnvironments() {
+  const parsed = [];
+  let current;
+  for (const line of fs.readFileSync(environmentConfig, 'utf8').split(/\r?\n/)) {
+    const start = line.match(/^  - name:\s*(.+)$/);
+    const property = line.match(/^    ([A-Za-z]+):\s*(.+)$/);
+    if (start) { current = { name: start[1].trim() }; parsed.push(current); }
+    else if (property && current) {
+      const [, key, raw] = property;
+      current[key] = raw === 'true' ? true : raw === 'false' ? false : raw.trim();
+    }
+  }
+  if (!parsed.length) throw new Error('No environments found in config/environments.yaml');
+  return parsed.map(config => {
+    const previous = state.environments.find(environment => environment.name === config.name) || {};
+    return {
+      ...config,
+      status: previous.status || 'Pending',
+      revision: previous.revision || 'Not deployed',
+      updatedAt: previous.updatedAt || 'Not yet synchronized',
+      policy: config.approvalRequired ? 'Approval required' : 'Passed'
+    };
+  });
+}
+
 function json(res, status, value) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(value));
@@ -25,13 +51,17 @@ function contentType(file) { return file.endsWith('.css') ? 'text/css' : file.en
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
-  if (req.method === 'GET' && url.pathname === '/api/status') return json(res, 200, state);
+  if (req.method === 'GET' && url.pathname === '/api/status') {
+    try { return json(res, 200, { ...state, environments: readEnvironments() }); }
+    catch (error) { return json(res, 500, { error: `Configuration error: ${error.message}` }); }
+  }
   if (req.method === 'POST' && url.pathname === '/api/sync') {
     try {
       const { environment } = await body(req);
+      const configured = readEnvironments();
       const target = state.environments.find(e => e.name === environment);
-      if (!target) return json(res, 404, { error: 'Unknown environment' });
-      target.status = 'Synced'; target.updatedAt = 'just now';
+      if (!configured.some(e => e.name === environment)) return json(res, 404, { error: 'Unknown environment' });
+      if (target) { target.status = 'Synced'; target.updatedAt = 'just now'; }
       state.activity.unshift({ action: 'Manual sync requested', target: environment, actor: 'operator', time: 'just now' });
       return json(res, 202, { ok: true, environment });
     } catch (error) { return json(res, 400, { error: error.message }); }
