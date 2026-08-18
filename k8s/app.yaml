@@ -4,7 +4,7 @@ metadata:
   name: gitops-pilot
   labels: { app: gitops-pilot }
 spec:
-  replicas: 2
+  replicas: 3
   selector: { matchLabels: { app: gitops-pilot } }
   template:
     metadata: { labels: { app: gitops-pilot } }
