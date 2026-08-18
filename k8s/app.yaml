@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-pilot
+  labels: { app: gitops-pilot }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: gitops-pilot } }
+  template:
+    metadata: { labels: { app: gitops-pilot } }
+    spec:
+      containers:
+        - name: dashboard
+          image: ghcr.io/your-org/gitops-pilot:latest
+          ports: [{ containerPort: 3000 }]
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: gitops-pilot }
+spec:
+  selector: { app: gitops-pilot }
+  ports: [{ port: 80, targetPort: 3000 }]

@@ -1,0 +1,16 @@
+name: Validate GitOps change
+on:
+  pull_request:
+    paths: ['config/**', 'k8s/**']
+  push:
+    branches: [main, release, production]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+      - name: Validate manifests
+        run: kubectl apply --dry-run=client -f k8s/
+      - name: Check configuration is present
+        run: test -f config/environments.yaml

@@ -1,0 +1,15 @@
+# Declarative environment inventory. Update via pull request.
+environments:
+  - name: development
+    branch: main
+    namespace: app-development
+    autoSync: true
+  - name: staging
+    branch: release
+    namespace: app-staging
+    autoSync: true
+  - name: production
+    branch: production
+    namespace: app-production
+    autoSync: false
+    approvalRequired: true
