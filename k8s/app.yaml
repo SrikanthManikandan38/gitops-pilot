@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitops-pilot
+  namespace: gitops-pilot
   labels: { app: gitops-pilot }
 spec:
   replicas: 4
@@ -11,13 +12,13 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: ghcr.io/SrikanthManikandan38/gitops-pilot:v1.0.0
+          image: ghcr.io/SrikanthManikandan38/gitops-pilot:latest
           ports: [{ containerPort: 3000 }]
           securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true }
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: gitops-pilot }
+metadata: { name: gitops-pilot, namespace: gitops-pilot }
 spec:
   selector: { app: gitops-pilot }
   ports: [{ port: 80, targetPort: 3000 }]

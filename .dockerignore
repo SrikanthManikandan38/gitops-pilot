@@ -1,0 +1,9 @@
+.git
+.github
+terraform
+k8s
+docs
+work
+outputs
+node_modules
+npm-debug.log

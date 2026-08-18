@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: gitops-pilot-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: gitops-pilot
+      rules:
+        - alert: GitOpsPilotUnavailable
+          expr: up{job="gitops-pilot"} == 0
+          for: 5m
+          labels: { severity: critical }
+          annotations:
+            summary: GitOps Pilot has been unavailable for five minutes.
