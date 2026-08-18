@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: ghcr.io/your-org/gitops-pilot:latest
+          image: ghcr.io/SrikanthManikandan38/gitops-pilot:v1.0.0
           ports: [{ containerPort: 3000 }]
           securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true }
 ---
