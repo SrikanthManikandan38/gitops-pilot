@@ -8,8 +8,8 @@ environments:
     branch: release
     namespace: app-staging
     autoSync: true
-  - name: production
-    branch: production
-    namespace: app-production
-    autoSync: false
-    approvalRequired: true
+  - - name: production
+      branch: production
+      namespace: app-production
+      autoSync: false
+      approvalRequired: true
