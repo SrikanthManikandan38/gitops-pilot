@@ -1,8 +1,2 @@
 node_modules/
-.terraform/
-*.tfstate
-*.tfstate.*
-terraform/backend.tf
-terraform/*.tfvars
-terraform/bootstrap/*.tfvars
 .env

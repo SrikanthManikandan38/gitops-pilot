@@ -13,6 +13,7 @@ spec:
       containers:
         - name: dashboard
           image: ghcr.io/SrikanthManikandan38/gitops-pilot:latest
+          imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 3000 }]
           securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true }
 ---
